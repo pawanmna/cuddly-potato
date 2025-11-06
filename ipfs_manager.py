@@ -164,13 +164,14 @@ class IPFSManager:
         except requests.exceptions.RequestException as e:
             raise Exception(f"Failed to publish to IPNS: {e}")
     
-    def resolve_ipns(self, ipns_name, nocache=True):
+    def resolve_ipns(self, ipns_name, nocache=True, timeout=30):
         """
         Resolve IPNS name to current CID
         
         Args:
             ipns_name: IPNS name to resolve (e.g., /ipns/12D3Koo... or just peer ID)
             nocache: Force fresh lookup (default: True)
+            timeout: Maximum time to wait in seconds (default: 30)
             
         Returns:
             Current CID for the IPNS name
@@ -184,24 +185,28 @@ class IPFSManager:
         try:
             params = {
                 'arg': ipns_key,
-                'nocache': 'true' if nocache else 'false'
+                'nocache': 'true' if nocache else 'false',
+                'dht-record-count': '1',  # Only need 1 record, faster
+                'dht-timeout': f'{timeout}s'
             }
             
-            print(f"🔍 Resolving IPNS: {ipns_key}")
+            print(f"🔍 Resolving IPNS: {ipns_key[:20]}... (max {timeout}s)")
             response = requests.post(
                 f"{self.api_url}/api/v0/name/resolve",
                 params=params,
-                timeout=60
+                timeout=timeout + 5  # Allow extra time for HTTP
             )
             
             if response.status_code == 200:
                 result = response.json()
                 cid = result['Path'].replace('/ipfs/', '')
-                print(f"✓ Resolved to CID: {cid}")
+                print(f"✓ Resolved to CID: {cid[:20]}...")
                 return cid
             else:
                 raise Exception(f"IPNS resolve failed: {response.status_code} - {response.text}")
                 
+        except requests.exceptions.Timeout:
+            raise Exception(f"IPNS resolution timed out after {timeout} seconds. The peer may be offline or not connected to DHT.")
         except requests.exceptions.RequestException as e:
             raise Exception(f"Failed to resolve IPNS: {e}")
     
@@ -240,6 +245,34 @@ class IPFSManager:
         """
         peer_id = self.get_peer_id()
         return f"/ipns/{peer_id}"
+    
+    def connect_to_peer(self, peer_address):
+        """
+        Connect directly to a peer
+        
+        Args:
+            peer_address: Multiaddr of peer (e.g., /ip4/1.2.3.4/tcp/4001/p2p/12D3Koo...)
+            
+        Returns:
+            True if successful
+        """
+        try:
+            response = requests.post(
+                f"{self.api_url}/api/v0/swarm/connect",
+                params={'arg': peer_address},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                print(f"✓ Connected to peer")
+                return True
+            else:
+                print(f"⚠️  Failed to connect to peer: {response.status_code}")
+                return False
+                
+        except requests.exceptions.RequestException as e:
+            print(f"⚠️  Peer connection error: {e}")
+            return False
     
     def pin_file(self, cid):
         """

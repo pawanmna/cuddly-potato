@@ -288,7 +288,7 @@ class IPFSFileManager:
         Publish blockchain to IPNS
         
         Returns:
-            IPNS name (/ipns/...)
+            Dictionary with IPNS name and CID
         """
         # Save current blockchain
         self._save_blockchain()
@@ -302,22 +302,35 @@ class IPFSFileManager:
             lifetime=self.config.IPNS_LIFETIME
         )
         
-        print(f"✓ Blockchain published to IPNS")
-        return ipns_name
+        print(f"✓ Blockchain published")
+        print(f"  IPNS: {ipns_name}")
+        print(f"  CID: {blockchain_cid}")
+        print(f"  💡 TIP: If IPNS is slow, share the CID instead!")
+        
+        return {
+            "ipns": ipns_name,
+            "cid": blockchain_cid
+        }
     
     def sync_from_peer(self, peer_ipns):
         """
         Sync blockchain from another peer's IPNS
         
         Args:
-            peer_ipns: Peer's IPNS name (/ipns/... or peer ID)
+            peer_ipns: Peer's IPNS name (/ipns/... or peer ID) OR direct CID
             
         Returns:
             Dictionary with sync results
         """
         try:
-            # Resolve IPNS to CID
-            blockchain_cid = self.ipfs.resolve_ipns(peer_ipns)
+            # Check if it's a direct CID (starts with Qm or bafy)
+            peer_input = peer_ipns.strip()
+            if peer_input.startswith('Qm') or peer_input.startswith('bafy'):
+                print(f"📥 Using direct CID: {peer_input[:20]}...")
+                blockchain_cid = peer_input
+            else:
+                # Resolve IPNS to CID (with 30 second timeout)
+                blockchain_cid = self.ipfs.resolve_ipns(peer_ipns, timeout=30)
             
             # Download blockchain
             temp_file = os.path.join(

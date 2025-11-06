@@ -232,16 +232,17 @@ def publish_blockchain():
     Publish blockchain to IPNS
     
     Returns:
-        JSON: {"success": true, "ipns": "..."}
+        JSON: {"success": true, "ipns": "...", "cid": "..."}
     """
     try:
         fm = init_file_manager()
-        ipns = fm.publish_blockchain()
+        result = fm.publish_blockchain()
         
         return jsonify({
             "success": True,
-            "ipns": ipns,
-            "message": "Blockchain published to IPNS"
+            "ipns": result["ipns"],
+            "cid": result["cid"],
+            "message": "Blockchain published! Use CID for faster sync."
         })
     
     except Exception as e:
