@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔗 Blockchain File Sharing System</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            border-radius: 15px 15px 0 0 !important;
+        }
+        
+        .drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        .drop-zone:hover, .drop-zone.drag-over {
+            background: #e7e9ff;
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+        
+        .ipns-box {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            margin-bottom: 20px;
+        }
+        
+        .file-item {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: white;
+            transition: all 0.3s;
+        }
+        
+        .file-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+        
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .spinner-container {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .file-size {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        .file-time {
+            color: #6c757d;
+            font-size: 0.85em;
+        }
+        
+        .encrypted-badge {
+            background: #28a745;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+    
+    <div class="main-container">
+        
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="text-white display-4">🔗 Blockchain File Sharing</h1>
+            <p class="text-white">Decentralized • Encrypted • Peer-to-Peer</p>
+        </div>
+        
+        <!-- IPNS Address Card -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-globe"></i> Your IPNS Address
+            </div>
+            <div class="card-body">
+                <div class="ipns-box" id="ipnsAddress">
+                    <i class="bi bi-arrow-repeat spin"></i> Loading...
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="copyIPNS()">
+                    <i class="bi bi-clipboard"></i> Copy Address
+                </button>
+                <small class="text-muted d-block mt-2">
+                    Share this address with other devices to sync files
+                </small>
+            </div>
+        </div>
+        
+        <!-- Upload Section -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-cloud-upload"></i> Upload Files
+            </div>
+            <div class="card-body">
+                <div class="drop-zone" id="dropZone">
+                    <i class="bi bi-cloud-arrow-up display-1 text-primary mb-3"></i>
+                    <h5>Drag & Drop Files Here</h5>
+                    <p class="text-muted">or click to browse</p>
+                    <input type="file" id="fileInput" multiple style="display: none;">
+                </div>
+                
+                <div class="mt-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="encryptCheck" checked>
+                        <label class="form-check-label" for="encryptCheck">
+                            <i class="bi bi-shield-lock"></i> Encrypt files before uploading
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="uploadSpinner" class="spinner-container">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">Uploading and encrypting...</p>
+                </div>
+                
+                <div id="selectedFiles" class="mt-3"></div>
+                
+                <button class="btn btn-gradient btn-lg mt-3" id="uploadBtn" style="display: none;" onclick="uploadFiles()">
+                    <i class="bi bi-upload"></i> Upload Files
+                </button>
+            </div>
+        </div>
+        
+        <!-- Publish Section -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-broadcast"></i> Publish Blockchain
+            </div>
+            <div class="card-body">
+                <p>Publish your blockchain to IPNS so other devices can sync from you.</p>
+                <button class="btn btn-gradient" onclick="publishBlockchain()">
+                    <i class="bi bi-broadcast"></i> Publish to IPNS
+                </button>
+                <div id="publishSpinner" class="spinner-container">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">Publishing to IPNS (30-60 seconds)...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sync Section -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-arrow-down-circle"></i> Receive Files from Peer
+            </div>
+            <div class="card-body">
+                <p>Enter another device's IPNS address to sync their blockchain.</p>
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                    <input type="text" class="form-control" id="peerIPNS" placeholder="/ipns/12D3KooW... or peer ID">
+                    <button class="btn btn-gradient" onclick="syncFromPeer()">
+                        <i class="bi bi-arrow-repeat"></i> Sync Blockchain
+                    </button>
+                </div>
+                <div id="syncSpinner" class="spinner-container">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">Syncing from peer...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Files List -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-files"></i> Your Files</span>
+                <button class="btn btn-sm btn-light" onclick="loadFiles()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="filesList">
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-4"></i>
+                        <p class="mt-3">No files yet. Upload some files to get started!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center text-white mt-4 mb-4">
+            <small>
+                <i class="bi bi-info-circle"></i> 
+                Powered by IPFS, Blockchain, and AES-256 Encryption
+            </small>
+        </div>
+        
+    </div>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global variables
+        let selectedFiles = [];
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadIPNS();
+            loadFiles();
+            setupDropZone();
+        });
+        
+        // Setup drag and drop
+        function setupDropZone() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-over');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+        
+        // Handle selected files
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            displaySelectedFiles();
+            document.getElementById('uploadBtn').style.display = 'block';
+        }
+        
+        // Display selected files
+        function displaySelectedFiles() {
+            const container = document.getElementById('selectedFiles');
+            container.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const fileSize = formatFileSize(file.size);
+                container.innerHTML += `
+                    <div class="alert alert-info d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-file-earmark"></i> ${file.name} (${fileSize})</span>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+        
+        // Remove file from selection
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displaySelectedFiles();
+            if (selectedFiles.length === 0) {
+                document.getElementById('uploadBtn').style.display = 'none';
+            }
+        }
+        
+        // Upload files
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) return;
+            
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            
+            const encrypt = document.getElementById('encryptCheck').checked;
+            formData.append('encrypt', encrypt);
+            
+            document.getElementById('uploadSpinner').style.display = 'block';
+            document.getElementById('uploadBtn').disabled = true;
+            
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Success', `Uploaded ${data.count} file(s)!`, 'success');
+                    selectedFiles = [];
+                    document.getElementById('selectedFiles').innerHTML = '';
+                    document.getElementById('uploadBtn').style.display = 'none';
+                    document.getElementById('fileInput').value = '';
+                    loadFiles();
+                } else {
+                    showToast('Error', data.error, 'danger');
+                }
+            } catch (error) {
+                showToast('Error', 'Upload failed: ' + error.message, 'danger');
+            } finally {
+                document.getElementById('uploadSpinner').style.display = 'none';
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+        
+        // Load IPNS address
+        async function loadIPNS() {
+            try {
+                const response = await fetch('/api/peer-id');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('ipnsAddress').textContent = data.ipns;
+                } else {
+                    document.getElementById('ipnsAddress').textContent = 'Error loading IPNS';
+                }
+            } catch (error) {
+                document.getElementById('ipnsAddress').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // Copy IPNS to clipboard
+        function copyIPNS() {
+            const ipns = document.getElementById('ipnsAddress').textContent;
+            navigator.clipboard.writeText(ipns).then(() => {
+                showToast('Copied', 'IPNS address copied to clipboard!', 'success');
+            });
+        }
+        
+        // Load files list
+        async function loadFiles() {
+            try {
+                const response = await fetch('/api/files');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayFiles(data.files);
+                } else {
+                    showToast('Error', data.error, 'danger');
+                }
+            } catch (error) {
+                showToast('Error', 'Failed to load files: ' + error.message, 'danger');
+            }
+        }
+        
+        // Display files
+        function displayFiles(files) {
+            const container = document.getElementById('filesList');
+            
+            if (files.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-4"></i>
+                        <p class="mt-3">No files yet. Upload some files to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            files.forEach(file => {
+                const fileSize = formatFileSize(file.file_size);
+                const uploadTime = new Date(file.upload_time).toLocaleString();
+                const encrypted = file.encrypted ? '<span class="encrypted-badge"><i class="bi bi-shield-lock"></i> Encrypted</span>' : '';
+                
+                container.innerHTML += `
+                    <div class="file-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="bi bi-file-earmark"></i> ${file.file_name}
+                                    ${encrypted}
+                                </h6>
+                                <div class="file-size">Size: ${fileSize}</div>
+                                <div class="file-time">Uploaded: ${uploadTime}</div>
+                                <div class="file-size mt-1">
+                                    <small>CID: ${file.ipfs_cid.substring(0, 20)}...</small>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-success me-2" onclick="downloadFile('${file.file_id}')">
+                                    <i class="bi bi-download"></i> Download
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteFile('${file.file_id}', '${file.file_name}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        // Download file
+        async function downloadFile(fileId) {
+            window.location.href = `/api/download/${fileId}`;
+            showToast('Downloading', 'File download started...', 'info');
+        }
+        
+        // Delete file
+        async function deleteFile(fileId, fileName) {
+            if (!confirm(`Delete "${fileName}"?`)) return;
+            
+            try {
+                const response = await fetch(`/api/delete/${fileId}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Deleted', 'File removed from blockchain', 'success');
+                    loadFiles();
+                } else {
+                    showToast('Error', data.error, 'danger');
+                }
+            } catch (error) {
+                showToast('Error', 'Delete failed: ' + error.message, 'danger');
+            }
+        }
+        
+        // Publish blockchain
+        async function publishBlockchain() {
+            document.getElementById('publishSpinner').style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/publish', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Published', 'Blockchain published to IPNS!', 'success');
+                } else {
+                    showToast('Error', data.error, 'danger');
+                }
+            } catch (error) {
+                showToast('Error', 'Publish failed: ' + error.message, 'danger');
+            } finally {
+                document.getElementById('publishSpinner').style.display = 'none';
+            }
+        }
+        
+        // Sync from peer
+        async function syncFromPeer() {
+            const peerIPNS = document.getElementById('peerIPNS').value.trim();
+            
+            if (!peerIPNS) {
+                showToast('Error', 'Please enter a peer IPNS address', 'warning');
+                return;
+            }
+            
+            document.getElementById('syncSpinner').style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/sync', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ peer_ipns: peerIPNS })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Synced', data.message, 'success');
+                    loadFiles();
+                } else {
+                    showToast('Sync Failed', data.message || data.error, 'danger');
+                }
+            } catch (error) {
+                showToast('Error', 'Sync failed: ' + error.message, 'danger');
+            } finally {
+                document.getElementById('syncSpinner').style.display = 'none';
+            }
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+        
+        // Show toast notification
+        function showToast(title, message, type = 'info') {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
+            
+            const bgClass = {
+                'success': 'bg-success',
+                'danger': 'bg-danger',
+                'warning': 'bg-warning',
+                'info': 'bg-info'
+            }[type] || 'bg-info';
+            
+            const toastHTML = `
+                <div id="${toastId}" class="toast ${bgClass} text-white" role="alert">
+                    <div class="toast-header ${bgClass} text-white">
+                        <strong class="me-auto">${title}</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 5000 });
+            toast.show();
+            
+            toastElement.addEventListener('hidden.bs.toast', () => {
+                toastElement.remove();
+            });
+        }
+    </script>
+    
+</body>
+</html>
