@@ -13,36 +13,10 @@ A **decentralized file sharing system** that combines blockchain technology and 
 
 ## Architecture
 
-```
-┌──────────────┐
-│  Web Browser │
-└──────┬───────┘
-       │ HTTP
-┌──────▼───────┐      ┌──────────────┐      ┌──────────────┐
-│ Flask Server │◄────►│  Blockchain  │      │  Encryption  │
-└──────┬───────┘      └──────────────┘      └──────────────┘
-       │                                            │
-       │                                            │
-┌──────▼───────┐      ┌──────────────┐             │
-│ IPFS Manager │◄────►│  IPFS Daemon │◄────────────┘
-└──────────────┘      └──────┬───────┘
-                             │
-                      ┌──────▼───────┐
-                      │ Global IPFS  │
-                      │   Network    │
-                      └──────────────┘
-```
 
 ## Prerequisites
 
-### 1. Python 3.8+
-
-```bash
-python --version
-# Should be 3.8 or higher
-```
-
-### 2. IPFS (Kubo)
+### 1. IPFS (Kubo)
 
 **Download and Install:**
 
