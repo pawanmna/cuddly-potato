@@ -21,6 +21,15 @@ app.config['UPLOAD_FOLDER'] = config.UPLOAD_FOLDER
 file_manager = None
 
 
+# Add CORS headers manually
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+
 def init_file_manager():
     """
     Initialize file manager (lazy loading)
@@ -256,10 +265,10 @@ def publish_blockchain():
 @app.route('/api/sync', methods=['POST'])
 def sync_blockchain():
     """
-    Sync blockchain from peer's IPNS
+    Sync blockchain from peer's IPNS or CID
     
     JSON Body:
-        {"peer_ipns": "/ipns/..." or "peer_id"}
+        {"peer_ipns": "/ipns/..." or "QmXxx..." (CID)}
     
     Returns:
         JSON: {"success": true/false, "message": "..."}
@@ -271,12 +280,26 @@ def sync_blockchain():
         if not data or 'peer_ipns' not in data:
             return jsonify({
                 "success": False,
-                "error": "Missing peer_ipns in request"
+                "error": "Missing peer_ipns in request body"
             }), 400
         
         peer_ipns = data['peer_ipns'].strip()
         
+        if not peer_ipns:
+            return jsonify({
+                "success": False,
+                "error": "Peer IPNS/CID cannot be empty"
+            }), 400
+        
+        print(f"\n{'='*60}")
+        print(f"SYNC REQUEST")
+        print(f"{'='*60}")
+        print(f"Input: {peer_ipns}")
+        
         result = fm.sync_from_peer(peer_ipns)
+        
+        print(f"Result: {result}")
+        print(f"{'='*60}\n")
         
         if result['success']:
             return jsonify(result)
@@ -284,10 +307,15 @@ def sync_blockchain():
             return jsonify(result), 500
     
     except Exception as e:
+        error_msg = str(e)
         traceback.print_exc()
+        print(f"\n{'='*60}")
+        print(f"SYNC ERROR: {error_msg}")
+        print(f"{'='*60}\n")
         return jsonify({
             "success": False,
-            "error": str(e)
+            "error": error_msg,
+            "message": f"Sync failed: {error_msg}"
         }), 500
 
 
