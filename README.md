@@ -1,5 +1,3 @@
----
-
 # Blockchain File Sharing System
 
 A **decentralized file sharing system** that combines blockchain technology and IPFS (InterPlanetary File System) to create an immutable, encrypted, peer-to-peer file distribution network.
@@ -389,5 +387,3 @@ Get blockchain data.
   "valid": true
 }
 ```
-
----
