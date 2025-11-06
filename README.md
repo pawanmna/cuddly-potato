@@ -1,17 +1,19 @@
-# 🔗 Blockchain File Sharing System
+---
+
+# Blockchain File Sharing System
 
 A **decentralized file sharing system** that combines blockchain technology and IPFS (InterPlanetary File System) to create an immutable, encrypted, peer-to-peer file distribution network.
 
-## 🌟 Features
+## Features
 
-- ✅ **Decentralized Storage** - Files stored on IPFS network, not central servers
-- ✅ **Blockchain Records** - Immutable file metadata using SHA-256 hashing
-- ✅ **End-to-End Encryption** - AES-256-GCM encryption for all files
-- ✅ **Peer-to-Peer Sync** - Share files directly between devices using IPNS
-- ✅ **Web Interface** - Modern, responsive UI with drag-and-drop upload
-- ✅ **No Central Authority** - Fully decentralized, no single point of failure
+* **Decentralized Storage** - Files stored on IPFS network, not central servers
+* **Blockchain Records** - Immutable file metadata using SHA-256 hashing
+* **End-to-End Encryption** - AES-256-GCM encryption for all files
+* **Peer-to-Peer Sync** - Share files directly between devices using IPNS
+* **Web Interface** - Modern, responsive UI with drag-and-drop upload
+* **No Central Authority** - Fully decentralized, no single point of failure
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌──────────────┐
@@ -33,7 +35,7 @@ A **decentralized file sharing system** that combines blockchain technology and 
                       └──────────────┘
 ```
 
-## 📋 Prerequisites
+## Prerequisites
 
 ### 1. Python 3.8+
 
@@ -46,8 +48,8 @@ python --version
 
 **Download and Install:**
 
-- **Official**: https://docs.ipfs.tech/install/
-- **Or use included**: `kubo_v0.38.2_linux-amd64.tar.gz` (Linux) or download for your OS
+* Official: [https://docs.ipfs.tech/install/](https://docs.ipfs.tech/install/)
+* Or use included: `kubo_v0.38.2_linux-amd64.tar.gz` (Linux) or download for your OS
 
 **Installation Steps:**
 
@@ -61,15 +63,15 @@ sudo bash install.sh
 ipfs --version
 ```
 
-**Windows**: Download `.zip` from https://dist.ipfs.tech/#kubo and extract to PATH
+**Windows**: Download `.zip` from [https://dist.ipfs.tech/#kubo](https://dist.ipfs.tech/#kubo) and extract to PATH
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Step 1: Install Dependencies
 
 ```bash
 # Clone or navigate to project directory
-cd something_new
+cd cuddly-potato
 
 # Install Python packages
 pip install -r requirements.txt
@@ -101,53 +103,53 @@ python web_app.py
 You should see:
 
 ```
-✓ Connected to IPFS (version 0.38.2)
-✓ Loaded blockchain from blockchain_data/blockchain.json
-✓ File manager initialized
+Connected to IPFS (version 0.38.2)
+Loaded blockchain from blockchain_data/blockchain.json
+File manager initialized
 
-📍 YOUR IPNS ADDRESS
+YOUR IPNS ADDRESS
 /ipns/12D3KooW...
 
-🚀 STARTING WEB SERVER
+STARTING WEB SERVER
 Web Interface: http://127.0.0.1:5000
 ```
 
 ### Step 4: Open Web Interface
 
-Open your browser to: **http://localhost:5000**
+Open your browser to: **[http://localhost:5000](http://localhost:5000)**
 
-## 📖 Usage Guide
+## Usage Guide
 
 ### Upload Files
 
-1. **Drag & Drop** files onto the upload area, or click to browse
-2. Check **"Encrypt files"** to enable AES-256 encryption (recommended)
-3. Click **"Upload Files"**
+1. Drag & Drop files onto the upload area, or click to browse
+2. Check “Encrypt files” to enable AES-256 encryption (recommended)
+3. Click “Upload Files”
 4. Files are encrypted → added to IPFS → recorded in blockchain
 
 ### Share Files (Publishing)
 
-1. Click **"📤 Publish to IPNS"**
-2. Wait 30-60 seconds for DHT propagation
-3. **Copy your IPNS address** (shown at top of page)
+1. Click “Publish to IPNS”
+2. Wait 30–60 seconds for DHT propagation
+3. Copy your IPNS address (shown at top of page)
 4. Share this IPNS with other devices
 
 ### Receive Files (Syncing)
 
 **On the receiving device:**
 
-1. Get the sender's IPNS address
-2. Paste it into **"Receive Files from Peer"** section
-3. Click **"🔄 Sync Blockchain"**
+1. Get the sender’s IPNS address
+2. Paste it into “Receive Files from Peer” section
+3. Click “Sync Blockchain”
 4. Files from sender will appear in your file list
-5. Click **Download** to retrieve files
+5. Click “Download” to retrieve files
 
 ### Download Files
 
-1. Click the **Download** button next to any file
+1. Click the “Download” button next to any file
 2. File is downloaded from IPFS → decrypted → saved to Downloads folder
 
-## 🔧 Project Structure
+## Project Structure
 
 ```
 something_new/
@@ -165,7 +167,7 @@ something_new/
 └── uploads/                 # Temporary upload directory
 ```
 
-## 🔐 How It Works
+## How It Works
 
 ### 1. File Upload Flow
 
@@ -245,27 +247,27 @@ Decrypt with local key
 Save to Downloads folder
 ```
 
-## 🔑 Security
+## Security
 
 ### Encryption
 
-- **Algorithm**: AES-256-GCM (via Fernet)
-- **Key Storage**: Local only (`blockchain_data/encryption.key`)
-- **Key Sharing**: NOT automatic (by design)
+* **Algorithm**: AES-256-GCM (via Fernet)
+* **Key Storage**: Local only (`blockchain_data/encryption.key`)
+* **Key Sharing**: Not automatic (by design)
 
-⚠️ **Important**: Each device has its own encryption key. You can only decrypt files you uploaded, unless you manually share the encryption key.
+**Important**: Each device has its own encryption key. You can only decrypt files you uploaded unless you manually share the encryption key.
 
 ### Blockchain Integrity
 
-- **SHA-256 hashing** for all blocks
-- **Chain validation** before syncing
-- **Tamper detection** via hash verification
+* **SHA-256 hashing** for all blocks
+* **Chain validation** before syncing
+* **Tamper detection** via hash verification
 
-## 🌐 API Reference
+## API Reference
 
 ### GET /api/peer-id
 
-Get this node's IPNS address.
+Get this node’s IPNS address.
 
 **Response:**
 
@@ -282,8 +284,8 @@ Upload files to IPFS and blockchain.
 
 **Form Data:**
 
-- `files`: File(s) to upload
-- `encrypt`: "true" or "false"
+* `files`: File(s) to upload
+* `encrypt`: "true" or "false"
 
 **Response:**
 
@@ -318,13 +320,13 @@ List all files in blockchain.
 }
 ```
 
-### GET /api/download/\<file_id\>
+### GET /api/download/<file_id>
 
 Download file from IPFS.
 
 **Response:** File download
 
-### POST /api/delete/\<file_id\>
+### POST /api/delete/<file_id>
 
 Delete file from blockchain.
 
@@ -388,149 +390,4 @@ Get blockchain data.
 }
 ```
 
-## 🐛 Troubleshooting
-
-### Problem: "Cannot connect to IPFS daemon"
-
-**Solution:**
-
-```bash
-# Start IPFS daemon in separate terminal
-ipfs daemon
-```
-
-### Problem: "Both devices show same IPNS"
-
-**Cause**: Using same IPFS repository
-
-**Solution** (on ONE device):
-
-```bash
-# Stop daemon
-Ctrl+C
-
-# Backup and reinitialize
-mv ~/.ipfs ~/.ipfs.backup
-ipfs init
-ipfs daemon
-```
-
-### Problem: "Failed to resolve IPNS"
-
-**Solutions:**
-
-1. Wait 60 seconds after publishing (DHT propagation)
-2. Connect devices directly:
-
-```bash
-# Device 1: Get peer address
-ipfs id
-
-# Device 2: Connect directly
-ipfs swarm connect /ip4/192.168.1.100/tcp/4001/p2p/12D3Koo...
-```
-
-### Problem: "Sync shows 'up to date' but files missing"
-
-**Solution**: Restart both IPFS daemons to clear cache
-
-### Problem: "Decryption error"
-
-**Cause**: Different encryption keys on devices
-
-**Note**: By design! You can only decrypt files you uploaded. To share encrypted files, you must manually share the encryption key file.
-
-## 🧪 Testing
-
-### Test Blockchain
-
-```bash
-python blockchain.py
-```
-
-### Test IPFS Manager
-
-```bash
-python ipfs_manager.py
-```
-
-### Test File Manager
-
-```bash
-python ipfs_file_manager.py
-```
-
-## ⚙️ Configuration
-
-Edit `config.py` to customize:
-
-```python
-class Config:
-    IPFS_API_URL = "http://127.0.0.1:5001"
-    IPNS_LIFETIME = "24h"
-    BLOCKCHAIN_DIFFICULTY = 0  # 0 = instant mining
-    MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100 MB
-    FLASK_PORT = 5000
-```
-
-## 📚 Technologies Used
-
-| Technology      | Purpose                          |
-| --------------- | -------------------------------- |
-| **Python**      | Backend programming              |
-| **Flask**       | Web server and REST API          |
-| **IPFS (Kubo)** | Decentralized file storage       |
-| **Blockchain**  | Immutable record keeping         |
-| **SHA-256**     | Cryptographic hashing            |
-| **AES-256**     | File encryption (Fernet)         |
-| **IPNS**        | Persistent peer addressing       |
-| **Bootstrap 5** | Responsive web interface         |
-| **JavaScript**  | Frontend interactivity           |
-
-## 📝 Use Cases
-
-- 📖 Academic research data sharing
-- 🎓 Educational blockchain/IPFS demonstrations
-- 🔐 Censorship-resistant file distribution
-- 💼 Decentralized document management
-- 🧪 Distributed systems experimentation
-
-## 🤝 Contributing
-
-This is an educational project demonstrating blockchain and IPFS concepts. Feel free to extend it!
-
-**Potential improvements:**
-
-- Multi-device encryption key sharing
-- File versioning
-- Smart contracts integration
-- Mobile app interface
-- Advanced blockchain consensus
-- IPFS cluster support
-
-## ⚠️ Limitations
-
-- Encryption keys are NOT automatically shared between devices
-- Files remain on IPFS network even after "deletion" from blockchain
-- IPNS resolution can be slow (30-60 seconds)
-- No built-in access control or permissions
-- Suitable for educational/experimental use
-
-## 📄 License
-
-This project is provided as-is for educational purposes.
-
-## 🆘 Support
-
-For issues:
-
-1. Check IPFS daemon is running: `ipfs daemon`
-2. Check Flask server is running: `python web_app.py`
-3. Review terminal logs for error messages
-4. Verify IPFS version: `ipfs --version` (recommended: 0.38.2+)
-
 ---
-
-**Built with ❤️ using Blockchain, IPFS, and Python**
-
-🔗 **Decentralized • Encrypted • Peer-to-Peer**
