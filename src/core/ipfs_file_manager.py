@@ -8,8 +8,10 @@ import uuid
 import json
 from datetime import datetime
 from cryptography.fernet import Fernet
-from blockchain import Blockchain
-from ipfs_manager import IPFSManager
+from .blockchain import Blockchain
+from .ipfs_manager import IPFSManager
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config import Config
 
 
