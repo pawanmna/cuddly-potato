@@ -43,7 +43,7 @@ class IPFSFileManager:
         # Initialize IPFS
         self.ipfs = IPFSManager(self.config.IPFS_API_URL)
         
-        print(f"✓ File manager initialized")
+        print(f"File manager initialized")
         print(f"  Blockchain: {len(self.blockchain)} blocks")
         print(f"  Encryption: AES-256-GCM (Fernet)")
     
@@ -57,12 +57,12 @@ class IPFSFileManager:
         if os.path.exists(self.encryption_key_file):
             with open(self.encryption_key_file, 'rb') as f:
                 key = f.read()
-            print(f"✓ Loaded encryption key from {self.encryption_key_file}")
+            print(f"Loaded encryption key from {self.encryption_key_file}")
         else:
             key = Fernet.generate_key()
             with open(self.encryption_key_file, 'wb') as f:
                 f.write(key)
-            print(f"✓ Generated new encryption key: {self.encryption_key_file}")
+            print(f"Generated new encryption key: {self.encryption_key_file}")
         
         return Fernet(key)
     
@@ -81,20 +81,20 @@ class IPFSFileManager:
                         raise ValueError("Blockchain file is empty")
                     blockchain_dict = json.loads(content)
                 blockchain = Blockchain.from_dict(blockchain_dict)
-                print(f"✓ Loaded blockchain from {self.blockchain_file}")
+                print(f"Loaded blockchain from {self.blockchain_file}")
             except (json.JSONDecodeError, ValueError) as e:
-                print(f"⚠️  Blockchain file corrupted ({e}), creating new one...")
+                print(f"  Blockchain file corrupted ({e}), creating new one...")
                 blockchain = Blockchain(difficulty=self.config.BLOCKCHAIN_DIFFICULTY)
                 # Save the newly created blockchain
                 with open(self.blockchain_file, 'w') as f:
                     json.dump(blockchain.to_dict(), f, indent=2)
-                print(f"✓ Created new blockchain")
+                print(f" Created new blockchain")
         else:
             blockchain = Blockchain(difficulty=self.config.BLOCKCHAIN_DIFFICULTY)
             # Save the newly created blockchain
             with open(self.blockchain_file, 'w') as f:
                 json.dump(blockchain.to_dict(), f, indent=2)
-            print(f"✓ Created new blockchain")
+            print(f" Created new blockchain")
         
         return blockchain
     
@@ -124,7 +124,7 @@ class IPFSFileManager:
         with open(output_path, 'wb') as f:
             f.write(ciphertext)
         
-        print(f"🔒 Encrypted: {os.path.basename(input_path)}")
+        print(f"Encrypted: {os.path.basename(input_path)}")
         return output_path
     
     def decrypt_file(self, input_path, output_path):
@@ -146,7 +146,7 @@ class IPFSFileManager:
         with open(output_path, 'wb') as f:
             f.write(plaintext)
         
-        print(f"🔓 Decrypted: {os.path.basename(output_path)}")
+        print(f"Decrypted: {os.path.basename(output_path)}")
         return output_path
     
     def upload_file(self, file_path, file_name, encrypt=True):
@@ -200,7 +200,7 @@ class IPFSFileManager:
         if encrypt and os.path.exists(encrypted_path):
             os.remove(encrypted_path)
         
-        print(f"✓ File uploaded: {file_name} (ID: {file_id})")
+        print(f"File uploaded: {file_name} (ID: {file_id})")
         return metadata
     
     def download_file(self, file_id, output_dir=None):
@@ -247,7 +247,7 @@ class IPFSFileManager:
             output_path = os.path.join(output_dir, file_name)
             self.ipfs.get_file(ipfs_cid, output_path)
         
-        print(f"✓ File downloaded: {file_name}")
+        print(f"File downloaded: {file_name}")
         return output_path
     
     def list_files(self):
@@ -278,7 +278,7 @@ class IPFSFileManager:
             if isinstance(block.data, dict) and block.data.get("file_id") == file_id:
                 self.blockchain.remove_block(i)
                 self._save_blockchain()
-                print(f"✓ File removed from blockchain: {file_id}")
+                print(f"File removed from blockchain: {file_id}")
                 return True
         
         return False
@@ -302,10 +302,9 @@ class IPFSFileManager:
             lifetime=self.config.IPNS_LIFETIME
         )
         
-        print(f"✓ Blockchain published")
+        print(f"Blockchain published")
         print(f"  IPNS: {ipns_name}")
         print(f"  CID: {blockchain_cid}")
-        print(f"  💡 TIP: If IPNS is slow, share the CID instead!")
         
         return {
             "ipns": ipns_name,
@@ -326,7 +325,7 @@ class IPFSFileManager:
             # Check if it's a direct CID (starts with Qm or bafy)
             peer_input = peer_ipns.strip()
             if peer_input.startswith('Qm') or peer_input.startswith('bafy'):
-                print(f"📥 Using direct CID: {peer_input[:20]}...")
+                print(f"Using direct CID: {peer_input[:20]}...")
                 blockchain_cid = peer_input
             else:
                 # Resolve IPNS to CID (with 30 second timeout)
@@ -448,11 +447,11 @@ if __name__ == "__main__":
         os.remove(downloaded)
         os.rmdir("downloads")
         
-        print("\n✓ All tests passed!")
+        print("\nAll tests passed!")
         
     except ConnectionError as e:
-        print(f"\n✗ {e}")
+        print(f"\n{e}")
     except Exception as e:
-        print(f"\n✗ Error: {e}")
+        print(f"\nError: {e}")
         import traceback
         traceback.print_exc()

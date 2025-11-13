@@ -39,7 +39,7 @@ def init_file_manager():
         try:
             file_manager = IPFSFileManager()
         except ConnectionError as e:
-            print(f"✗ Failed to initialize: {e}")
+            print(f"Failed to initialize: {e}")
             raise
     return file_manager
 
@@ -388,7 +388,7 @@ def internal_error(error):
 
 if __name__ == '__main__':
     print("=" * 60)
-    print("🔗 BLOCKCHAIN FILE SHARING SYSTEM")
+    print("BLOCKCHAIN FILE SHARING SYSTEM")
     print("=" * 60)
     print()
     
@@ -398,7 +398,7 @@ if __name__ == '__main__':
         
         print()
         print("=" * 60)
-        print("📍 YOUR IPNS ADDRESS")
+        print("YOUR IPNS ADDRESS")
         print("=" * 60)
         ipns = fm.get_peer_ipns()
         print(f"\n{ipns}\n")
@@ -406,7 +406,7 @@ if __name__ == '__main__':
         print()
         
         print("=" * 60)
-        print("🚀 STARTING WEB SERVER")
+        print("STARTING WEB SERVER")
         print("=" * 60)
         print(f"\nWeb Interface: http://{config.FLASK_HOST}:{config.FLASK_PORT}")
         print()
@@ -424,18 +424,18 @@ if __name__ == '__main__':
     except ConnectionError as e:
         print()
         print("=" * 60)
-        print("✗ STARTUP FAILED")
+        print("STARTUP FAILED")
         print("=" * 60)
         print(f"\n{e}\n")
         print("Please ensure IPFS daemon is running:")
         print("  $ ipfs daemon")
         print()
     except KeyboardInterrupt:
-        print("\n\n✓ Server stopped")
+        print("\n\nServer stopped")
     except Exception as e:
         print()
         print("=" * 60)
-        print("✗ ERROR")
+        print("ERROR")
         print("=" * 60)
         print(f"\n{e}\n")
         traceback.print_exc()

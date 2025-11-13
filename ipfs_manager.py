@@ -34,7 +34,7 @@ class IPFSManager:
             response = requests.post(f"{self.api_url}/api/v0/version", timeout=5)
             if response.status_code == 200:
                 version_info = response.json()
-                print(f"✓ Connected to IPFS (version {version_info.get('Version', 'unknown')})")
+                print(f"Connected to IPFS (version {version_info.get('Version', 'unknown')})")
             else:
                 raise ConnectionError("IPFS daemon not responding correctly")
         except requests.exceptions.RequestException as e:
@@ -74,7 +74,7 @@ class IPFSManager:
                 result = response.json()
                 cid = result['Hash']
                 size = result.get('Size', 0)
-                print(f"✓ Added to IPFS: {cid} ({size} bytes)")
+                print(f"Added to IPFS: {cid} ({size} bytes)")
                 return cid
             else:
                 raise Exception(f"IPFS add failed: {response.status_code} - {response.text}")
@@ -110,7 +110,7 @@ class IPFSManager:
                         f.write(chunk)
                 
                 file_size = os.path.getsize(output_path)
-                print(f"✓ Downloaded from IPFS: {cid} ({file_size} bytes)")
+                print(f"Downloaded from IPFS: {cid} ({file_size} bytes)")
                 return output_path
             else:
                 raise Exception(f"IPFS get failed: {response.status_code} - {response.text}")
@@ -143,7 +143,7 @@ class IPFSManager:
             if key_name != 'self':
                 params['key'] = key_name
             
-            print(f"📤 Publishing to IPNS (this may take 30-60 seconds)...")
+            print(f"Publishing to IPNS (this may take 30-60 seconds)...")
             response = requests.post(
                 f"{self.api_url}/api/v0/name/publish",
                 params=params,
@@ -154,7 +154,7 @@ class IPFSManager:
                 result = response.json()
                 ipns_key = result['Name']
                 ipns_name = f"/ipns/{ipns_key}"
-                print(f"✓ Published to IPNS: {ipns_name}")
+                print(f"Published to IPNS: {ipns_name}")
                 print(f"  CID: {cid}")
                 print(f"  Lifetime: {lifetime}")
                 return ipns_name
@@ -190,7 +190,7 @@ class IPFSManager:
                 'dht-timeout': f'{timeout}s'
             }
             
-            print(f"🔍 Resolving IPNS: {ipns_key[:20]}... (max {timeout}s)")
+            print(f"Resolving IPNS: {ipns_key[:20]}... (max {timeout}s)")
             response = requests.post(
                 f"{self.api_url}/api/v0/name/resolve",
                 params=params,
@@ -200,7 +200,7 @@ class IPFSManager:
             if response.status_code == 200:
                 result = response.json()
                 cid = result['Path'].replace('/ipfs/', '')
-                print(f"✓ Resolved to CID: {cid[:20]}...")
+                print(f"Resolved to CID: {cid[:20]}...")
                 return cid
             else:
                 raise Exception(f"IPNS resolve failed: {response.status_code} - {response.text}")
@@ -264,14 +264,14 @@ class IPFSManager:
             )
             
             if response.status_code == 200:
-                print(f"✓ Connected to peer")
+                print(f"Connected to peer")
                 return True
             else:
-                print(f"⚠️  Failed to connect to peer: {response.status_code}")
+                print(f"Failed to connect to peer: {response.status_code}")
                 return False
                 
         except requests.exceptions.RequestException as e:
-            print(f"⚠️  Peer connection error: {e}")
+            print(f"Peer connection error: {e}")
             return False
     
     def pin_file(self, cid):
@@ -292,14 +292,14 @@ class IPFSManager:
             )
             
             if response.status_code == 200:
-                print(f"📌 Pinned: {cid}")
+                print(f"Pinned: {cid}")
                 return True
             else:
-                print(f"⚠️  Pin failed: {response.status_code}")
+                print(f"Pin failed: {response.status_code}")
                 return False
                 
         except requests.exceptions.RequestException as e:
-            print(f"⚠️  Pin error: {e}")
+            print(f"Pin error: {e}")
             return False
 
 
@@ -348,11 +348,11 @@ if __name__ == "__main__":
         os.remove(test_file)
         os.remove(download_path)
         
-        print("\n✓ All tests passed!")
+        print("\nAll tests passed!")
         
     except ConnectionError as e:
-        print(f"\n✗ {e}")
+        print(f"\n{e}")
         print("\nMake sure IPFS daemon is running:")
         print("  ipfs daemon")
     except Exception as e:
-        print(f"\n✗ Error: {e}")
+        print(f"\nError: {e}")

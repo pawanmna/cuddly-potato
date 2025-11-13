@@ -1,14 +1,10 @@
-"""
-Blockchain Implementation for File Sharing System
-Provides immutable record keeping using SHA-256 hashing
-"""
-
 import hashlib
 import json
 import time
 
 
 class Block:
+    
     """
     Represents a single block in the blockchain
     Contains file metadata and cryptographic links
@@ -64,7 +60,7 @@ class Block:
             self.nonce += 1
             self.hash = self.calculate_hash()
         
-        print(f"⛏️  Block mined: {self.hash}")
+        print(f"Block mined: {self.hash}")
     
     def to_dict(self):
         """
@@ -127,7 +123,7 @@ class Blockchain:
         genesis = Block(0, time.time(), {"message": "Genesis Block"}, "0")
         genesis.mine_block(self.difficulty)
         self.chain.append(genesis)
-        print("✓ Genesis block created")
+        print("Genesis block created")
     
     def get_latest_block(self):
         """
@@ -157,7 +153,7 @@ class Blockchain:
         )
         new_block.mine_block(self.difficulty)
         self.chain.append(new_block)
-        print(f"✓ Block #{new_block.index} added to chain")
+        print(f"Block #{new_block.index} added to chain")
         return new_block
     
     def remove_block(self, index):
@@ -181,7 +177,7 @@ class Blockchain:
                 self.chain[i].previous_hash = self.chain[i-1].hash
                 self.chain[i].hash = self.chain[i].calculate_hash()
         
-        print(f"✓ Block #{index} removed")
+        print(f"Block #{index} removed")
         return True
     
     def is_chain_valid(self):
@@ -197,14 +193,14 @@ class Blockchain:
             
             # Verify block's hash matches its content
             if current_block.hash != current_block.calculate_hash():
-                print(f"✗ Block {i} is tampered!")
+                print(f" Block {i} is tampered!")
                 print(f"  Expected: {current_block.hash}")
                 print(f"  Got: {current_block.calculate_hash()}")
                 return False
             
             # Verify link to previous block
             if current_block.previous_hash != previous_block.hash:
-                print(f"✗ Chain broken at block {i}!")
+                print(f" Chain broken at block {i}!")
                 print(f"  Block {i} points to: {current_block.previous_hash}")
                 print(f"  Block {i-1} actually is: {previous_block.hash}")
                 return False
